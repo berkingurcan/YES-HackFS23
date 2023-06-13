@@ -1,6 +1,18 @@
 .container {
   padding: 0 2rem;
   justify-content: center;
+  gap: 20px;
+}
+
+.holcontainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.column {
+    flex: 1;
 }
 
 .main {

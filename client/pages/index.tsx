@@ -3,12 +3,6 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 
-// add two column layout for two user roles (issuer and holder)   
-// add a button to mint a token (issuer role)
-// add a button to send a token (holder role)
-// add a button to withdraw a token (holder role)
-
-
 const Home: NextPage = () => {
   return (
     <div className={styles.container}>

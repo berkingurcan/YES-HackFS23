@@ -24,34 +24,36 @@ const Holder: NextPage = () => {
         <main className={styles.main}>
             <h1>Holder Page</h1>
             <ConnectButton />
-            <div className={styles.container}>
-                <h3>My Soulbound Tokens</h3>
-                <div style={{ height: 400, width: '100%' }}>
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    initialState={{
-                    pagination: {
-                        paginationModel: { page: 0, pageSize: 5 },
-                    },
-                    }}
-                    pageSizeOptions={[5, 10]}
-                    checkboxSelection
-                />
+            <div className={styles.holcontainer}>
+                <div className={styles.column}>
+                    <h3>My Soulbound Tokens</h3>
+                    <div style={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        initialState={{
+                        pagination: {
+                            paginationModel: { page: 0, pageSize: 5 },
+                        },
+                        }}
+                        pageSizeOptions={[5, 10]}
+                        checkboxSelection
+                    />
+                    </div>
                 </div>
-            </div>
-            <div className={styles.container}>
-                <h3>Mint Gate Token</h3>
-                <div className={styles.card}>
-                    <TextField id="outlined-basic" label="SBT Address" variant="outlined" />
-                    <TextField id="outlined-basic" label="To" variant="outlined" />
-                    <br />
-                    <br />
-                    <Button variant="outlined">Mint Gate Token</Button>
-                    <br />
-                    <br />  
-                    <Button variant="outlined">Burn Gate Token</Button>
-                </div>  
+                <div className={styles.column}>
+                    <h3>Mint Gate Token</h3>
+                    <div className={styles.card}>
+                        <TextField id="outlined-basic" label="SBT Address" variant="outlined" />
+                        <TextField id="outlined-basic" label="To" variant="outlined" />
+                        <br />
+                        <br />
+                        <Button variant="outlined">Mint Gate Token</Button>
+                        <br />
+                        <br />  
+                        <Button variant="outlined">Burn Gate Token</Button>
+                    </div>  
+                </div>
             </div>
         </main>
     );
