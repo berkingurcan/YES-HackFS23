@@ -9,7 +9,8 @@ const Holder: NextPage = () => {
         <main className={styles.main}>
             <div className={styles.container}>
                 <h1>Holder Page</h1>
-                <ConnectButton />
+                
+
                 
 
             </div>
