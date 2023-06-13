@@ -21,6 +21,11 @@ const Home: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
       <main className={styles.main}>
+        <h1>Welcome to Decentralized Verifiable Credentials Issuance Platform</h1>
+        <p>The Decentralized Verifiable Credentials Issuance Infrastructure is 
+          a platform where institutions can issue and store VC for holders in a
+           decentralized manner.
+        </p>
         <ConnectButton />
         <div className={styles.grid}>
           <a className={styles.card} href="/issuer" rel="noopener noreferrer"> 
