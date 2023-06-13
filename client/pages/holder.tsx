@@ -19,9 +19,6 @@ const rows = [
 ];
 
 
-    
-
-
 const Holder: NextPage = () => {
     return (
         <main className={styles.main}>
