@@ -11,7 +11,6 @@ const Holder: NextPage = () => {
                 <h1>Holder Page</h1>
                 
 
-                
 
             </div>
         </main>

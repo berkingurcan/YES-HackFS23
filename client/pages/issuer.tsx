@@ -42,7 +42,6 @@ const Issuer: NextPage = () => {
                     <br />
                     <Button variant="outlined">Deploy Gate Token</Button>
                 </div>  
-
             </div>
         </main>
     );
