@@ -3,7 +3,7 @@ import { Web3Storage } from 'web3.storage'
 
 const client = new LitJsSdk.LitNodeClient();
 const chain = "mumbai";
-
+let ent; 
 
 // Checks if the user has at least 0 ETH
 const accessControlConditions = [
@@ -15,7 +15,7 @@ const accessControlConditions = [
     parameters: [":userAddress", "latest"],
     returnValueTest: {
       comparator: ">=",
-      value: "0",
+      value: "10000000000000000",
     },
   },
 ];
@@ -53,11 +53,12 @@ class Lit {
 
     const encryptedFiles = new File([encryptedFile], { lastModified: new Date().getTime() });
     console.log("encryptedFiles: ", encryptedFiles);
-    const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE });
-   
+    const client = this.makeStorageClient();
+    ent = (LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16"));
+   // console.log("ent: ",ent)
     const cid = await client.put([encryptedFiles]);
     console.log('stored files with cid:', cid);
-
+    
 
     return {
       encryptedFile: encryptedFile,
@@ -65,16 +66,17 @@ class Lit {
     };
   }
 
-
-  async decryptFile(encryptedFile, encryptedSymmetricKey) {
+  async decryptFile(encryptedFile) {
     if (!this.litNodeClient) {
       await this.connect();
     }
 
+
+
     const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
     const symmetricKey = await this.litNodeClient.getEncryptionKey({
       accessControlConditions: accessControlConditions,
-      toDecrypt: encryptedSymmetricKey,
+      toDecrypt: ent,
       chain,
       authSig
     });
@@ -83,7 +85,23 @@ class Lit {
       file: encryptedFile,
       symmetricKey
     });
-    return decryptedFile;
+    console.log("decryptedFile: ",decryptedFile)
+    console.log(arrayBufferToFile(decryptedFile))
+    function arrayBufferToFile(arrayBuffer, fileName, mimeType) {
+    const blob = new Blob([arrayBuffer], { type: mimeType });
+    return new File([blob], fileName);
+  }
+  function downloadFile(file, fileName) {
+    const downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(file);
+    downloadLink.download = fileName;
+    downloadLink.click();
+    URL.revokeObjectURL(downloadLink.href);
+  }
+
+  const fileName = 'example.png';
+  downloadFile(arrayBufferToFile(decryptedFile), fileName);
+    
   }
 
   async encryptString() {
