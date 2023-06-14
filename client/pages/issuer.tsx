@@ -6,36 +6,38 @@ import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 import * as LitJsSdk from "@lit-protocol/lit-node-client";
 import { zeroETHaccessControlCondition } from "../utils/accessControls";
-import Lit from  "../utils/lit";
+import Lit from "../utils/lit";
 
 function fileToBlob(file: File): Promise<Blob> {
-    return new Promise<Blob>((resolve, reject) => {
-      const reader = new FileReader();
-  
-      reader.onloadend = () => {
-        const blob = new Blob([reader.result as ArrayBuffer], { type: file.type });
-        resolve(blob);
-      };
-  
-      reader.onerror = () => {
-        reject(new Error('Error reading file'));
-      };
-  
-      reader.readAsArrayBuffer(new Blob([file]));
-    });
-  }
+  return new Promise<Blob>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const blob = new Blob([reader.result as ArrayBuffer], {
+        type: file.type,
+      });
+      resolve(blob);
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Error reading file"));
+    };
+
+    reader.readAsArrayBuffer(new Blob([file]));
+  });
+}
 
 // create function which encrypts pdf file and uploads to hyperspace via web3.storage
 async function uploadFile(file: any) {
-    let blobFile = await fileToBlob(file);
-    await Lit.connect();
-    const encryptedObject = await Lit.encryptFile(blobFile);
+  let blobFile = await fileToBlob(file);
+  await Lit.connect();
+  const encryptedObject = await Lit.encryptFile(blobFile);
 
-    console.log("encryptedObject: ", encryptedObject);
+  console.log("encryptedObject: ", encryptedObject);
 }
 
 const Issuer: NextPage = () => {
-    return (
+  return (
     <main className={styles.main}>
       <h1>Issuer Page</h1>
       <ConnectButton />
@@ -50,7 +52,9 @@ const Issuer: NextPage = () => {
           <p>Drag your file here or click in this area.</p>
         </div>
         <div className={styles.card}>
-          <Button onClick={uploadFile} variant="outlined">Upload File To Filecoin</Button>
+          <Button onClick={uploadFile} variant="outlined">
+            Upload File To Filecoin
+          </Button>
           <br />
           <br />
 

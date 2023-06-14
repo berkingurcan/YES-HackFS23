@@ -102,7 +102,6 @@ class Lit {
 
     console.log(arrayBufferToFile(decryptedFile));
 
-
     function downloadFile(file: Blob | MediaSource, fileName: string) {
       const downloadLink = document.createElement("a");
       downloadLink.href = URL.createObjectURL(file);
