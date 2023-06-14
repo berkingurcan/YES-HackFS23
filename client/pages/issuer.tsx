@@ -8,17 +8,6 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import * as LitJsSdk from "@lit-protocol/lit-node-client";
-import { Web3Storage } from 'web3.storage';
-import { zeroETHaccess } from '../utils/zeroETHaccess';
-import { tenthETHaccess } from '../utils/tenthETHaccess';
-
-
-const client = new LitJsSdk.LitNodeClient();
-let ent;
-
-
-
-
 
 
 const Issuer: NextPage = () => {

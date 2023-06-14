@@ -1,7 +1,7 @@
 const chain = "hyperspace"
 
 // user at least 0 ETH
-const zeroETHaccessControlCondition = [
+export const zeroETHaccessControlCondition = [
     {
         contractAddress: "",
         standardContractType: "",
@@ -16,7 +16,7 @@ const zeroETHaccessControlCondition = [
 ]
 
 // user at least 0.1 ETH
-const tenthETHaccessControlCondition = [
+export const tenthETHaccessControlCondition = [
     {
         contractAddress: "",
         standardContractType: "",
@@ -29,8 +29,3 @@ const tenthETHaccessControlCondition = [
         },
     },
 ]
-
-export const accessControls = {
-    zeroETHaccessControlCondition,
-    tenthETHaccessControlCondition,
-}
