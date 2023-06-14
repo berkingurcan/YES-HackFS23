@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import lit from "./lit";
 import { useState } from "react";
+import Button from "../components/Button"
+import Input from '../components/Input';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -64,6 +66,9 @@ export default function Home() {
       <button onClick={handleEncryptString}>encryptString and deCryptString</button>
       <button onClick={handleEncryptFile}>EncryptFile</button>
       <button onClick={handleDecryptFile}>DecryptFile</button>
+
+      <Button/>
+      <Input/>
       
       
     </>
