@@ -1,10 +1,13 @@
 import * as LitJsSdk from "@lit-protocol/lit-node-client";
-import { Web3Storage } from 'web3.storage'
-import { zeroETHaccessControlCondition, tenthETHaccessControlCondition } from './accessControls';
+import { Web3Storage } from "web3.storage";
+import {
+  zeroETHaccessControlCondition,
+  tenthETHaccessControlCondition,
+} from "./accessControls";
 
 const client = new LitJsSdk.LitNodeClient();
 const chain = "hyperspace";
-let ent: any; 
+let ent: any;
 
 class Lit {
   litNodeClient: LitJsSdk.LitNodeClient | undefined;
@@ -15,7 +18,7 @@ class Lit {
   }
 
   makeStorageClient() {
-    return new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE })
+    return new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE });
   }
 
   async encryptFile(file: any) {
@@ -23,7 +26,9 @@ class Lit {
       await this.connect();
     }
     const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
-    const { encryptedFile, symmetricKey } = await LitJsSdk.encryptFile({ file });
+    const { encryptedFile, symmetricKey } = await LitJsSdk.encryptFile({
+      file,
+    });
 
     const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
       accessControlConditions: zeroETHaccessControlCondition,
@@ -33,25 +38,33 @@ class Lit {
     });
 
     console.log(
-        "encryptedFile: ", encryptedFile, 
-        "encryptedSymmetricKey: ", encryptedSymmetricKey, 
-        "encryptedSymmetricKey: ", LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16")
-    )
+      "encryptedFile: ",
+      encryptedFile,
+      "encryptedSymmetricKey: ",
+      encryptedSymmetricKey,
+      "encryptedSymmetricKey: ",
+      LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16")
+    );
 
-    const encryptedFiles = new File([encryptedFile], { lastModified: new Date().getTime() });
+    const encryptedFiles = new File([encryptedFile], {
+      lastModified: new Date().getTime(),
+    });
     console.log("encryptedFiles: ", encryptedFiles);
 
     const client = this.makeStorageClient();
 
-    ent = (LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16"));
-    console.log("ent: ", ent)
+    ent = LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16");
+    console.log("ent: ", ent);
 
     const cid = await client.put([encryptedFiles]);
-    console.log('stored files with cid:', cid);
+    console.log("stored files with cid:", cid);
 
     return {
       encryptedFile: encryptedFile,
-      encryptedSymmetricKey: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16")
+      encryptedSymmetricKey: LitJsSdk.uint8arrayToString(
+        encryptedSymmetricKey,
+        "base16"
+      ),
     };
   }
 
@@ -66,31 +79,35 @@ class Lit {
       accessControlConditions: zeroETHaccessControlCondition,
       toDecrypt: ent,
       chain,
-      authSig
+      authSig,
     });
 
     const decryptedFile = await LitJsSdk.decryptFile({
       file: encryptedFile,
-      symmetricKey
+      symmetricKey,
     });
 
-    console.log("decryptedFile: ",decryptedFile)
-    console.log(arrayBufferToFile(decryptedFile))
+    console.log("decryptedFile: ", decryptedFile);
+    console.log(arrayBufferToFile(decryptedFile));
 
-    function arrayBufferToFile(arrayBuffer: BlobPart, fileName: string | undefined, mimeType: undefined) {
-        const blob = new Blob([arrayBuffer], { type: mimeType });
-        return new File([blob], fileName);
+    function arrayBufferToFile(
+      arrayBuffer: BlobPart,
+      fileName: string | undefined,
+      mimeType: undefined
+    ) {
+      const blob = new Blob([arrayBuffer], { type: mimeType });
+      return new File([blob], fileName);
     }
 
     function downloadFile(file: Blob | MediaSource, fileName: string) {
-        const downloadLink = document.createElement('a');
-        downloadLink.href = URL.createObjectURL(file);
-        downloadLink.download = fileName;
-        downloadLink.click();
-        URL.revokeObjectURL(downloadLink.href);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(file);
+      downloadLink.download = fileName;
+      downloadLink.click();
+      URL.revokeObjectURL(downloadLink.href);
     }
 
-    const fileName = 'example.png';
+    const fileName = "example.png";
     downloadFile(arrayBufferToFile(decryptedFile), fileName);
   }
 
@@ -101,9 +118,9 @@ class Lit {
 
     const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
     const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(
-      stringName,
+      stringName
     );
-    
+
     const encryptedSymmetricKey = await window.LitNodeClient.saveEncryptionKey({
       zeroETHaccessControlCondition,
       symmetricKey,
@@ -112,13 +129,16 @@ class Lit {
     });
 
     console.log(
-        "EncrptedString: ", encryptedString, 
-        "encryptedSymmetricKey: ", encryptedSymmetricKey, 
-        "encryptedSymmetricKey: ", LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16")
-    )
+      "EncrptedString: ",
+      encryptedString,
+      "encryptedSymmetricKey: ",
+      encryptedSymmetricKey,
+      "encryptedSymmetricKey: ",
+      LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16")
+    );
 
     const symmetricKey1 = await this.litNodeClient.getEncryptionKey({
-      zeroETHaccessControlCondition,
+      accessControlConditions: zeroETHaccessControlCondition,
       toDecrypt: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16"),
       chain,
       authSig,

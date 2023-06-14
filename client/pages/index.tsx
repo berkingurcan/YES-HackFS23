@@ -1,7 +1,7 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import type { NextPage } from 'next';
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import type { NextPage } from "next";
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   return (
@@ -15,14 +15,17 @@ const Home: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
       <main className={styles.main}>
-        <h1>Welcome to Decentralized Verifiable Credentials Issuance Platform</h1>
-        <p>The Decentralized Verifiable Credentials Issuance Infrastructure is 
-          a platform where institutions can issue and store VC for holders in a
-           decentralized manner.
+        <h1>
+          Welcome to Decentralized Verifiable Credentials Issuance Platform
+        </h1>
+        <p>
+          The Decentralized Verifiable Credentials Issuance Infrastructure is a
+          platform where institutions can issue and store VC for holders in a
+          decentralized manner.
         </p>
         <ConnectButton />
         <div className={styles.grid}>
-          <a className={styles.card} href="/issuer" rel="noopener noreferrer"> 
+          <a className={styles.card} href="/issuer" rel="noopener noreferrer">
             <h2>Issuer</h2>
             <p>Issuer role</p>
           </a>
