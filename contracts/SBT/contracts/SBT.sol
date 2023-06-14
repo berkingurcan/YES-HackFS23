@@ -1,34 +1,54 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Lock {
-    uint public unlockTime;
-    address payable public owner;
+contract SBT is ERC721, ERC721URIStorage, Ownable {
+    constructor() ERC721("SBT", "SBT") {}
 
-    event Withdrawal(uint amount, uint when);
-
-    constructor(uint _unlockTime) payable {
-        require(
-            block.timestamp < _unlockTime,
-            "Unlock time should be in the future"
-        );
-
-        unlockTime = _unlockTime;
-        owner = payable(msg.sender);
+    function _baseURI() internal pure override returns (string memory) {
+        return "https://";
     }
 
-    function withdraw() public {
-        // Uncomment this line, and the import of "hardhat/console.sol", to print a log in your terminal
-        // console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
+    // The following functions are overrides required by Solidity.
 
-        require(block.timestamp >= unlockTime, "You can't withdraw yet");
-        require(msg.sender == owner, "You aren't the owner");
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
 
-        emit Withdrawal(address(this).balance, block.timestamp);
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
 
-        owner.transfer(address(this).balance);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function transferFrom(address, address, uint256) public virtual override {
+        revert("Token transfer is not allowed");
+    }
+
+    function safeTransferFrom(address, address, uint256) public virtual override {
+        revert("Token transfer is not allowed");
+    }
+
+    function safeTransferFrom(address, address, uint256, bytes memory) public virtual override {
+        revert("Token transfer is not allowed");
+    }
+
+    function _safeTransfer(address, address, uint256, bytes memory) internal virtual override {
+        revert("Token transfer is not allowed");
     }
 }
