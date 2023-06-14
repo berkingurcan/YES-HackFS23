@@ -12,8 +12,6 @@ contract SBT is ERC721, ERC721URIStorage, Ownable {
         return "https://";
     }
 
-    // The following functions are overrides required by Solidity.
-
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
     }
