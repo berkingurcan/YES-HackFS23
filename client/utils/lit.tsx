@@ -65,6 +65,8 @@ class Lit {
         encryptedSymmetricKey,
         "base16"
       ),
+      cid: cid,
+      ent: ent,
     };
   }
 
@@ -88,7 +90,6 @@ class Lit {
     });
 
     console.log("decryptedFile: ", decryptedFile);
-    console.log(arrayBufferToFile(decryptedFile));
 
     function arrayBufferToFile(
       arrayBuffer: BlobPart,
@@ -98,6 +99,9 @@ class Lit {
       const blob = new Blob([arrayBuffer], { type: mimeType });
       return new File([blob], fileName);
     }
+
+    console.log(arrayBufferToFile(decryptedFile));
+
 
     function downloadFile(file: Blob | MediaSource, fileName: string) {
       const downloadLink = document.createElement("a");
