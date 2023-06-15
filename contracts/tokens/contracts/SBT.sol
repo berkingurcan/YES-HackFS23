@@ -1,12 +1,47 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 contract SBT is ERC721, ERC721URIStorage, Ownable {
+
+    /**
+     * @dev Metadata struct
+     * @param cid IPFS content identifier
+     * @param encryptedSymmetricKey encrypted symmetric key of the file
+     */
+    struct Metadata {
+        string cid;
+        string encryptedSymmetricKey;
+    }
+
+    // Mapping from token ID to metadata
+    mapping(uint256 => Metadata) private _metadata;
+    
     constructor() ERC721("SBT", "SBT") {}
+
+    /**
+     * @dev Mint a new token
+     * @param to address of the new token owner
+     * @param tokenId token ID
+     * @param cid IPFS content identifier
+     * @param encryptedSymmetricKey encrypted symmetric key of the file
+     */ 
+    function mint(address to, uint256 tokenId, string memory cid, string memory encryptedSymmetricKey) public onlyOwner {
+        _mint(to, tokenId);
+        _metadata[tokenId] = Metadata(cid, encryptedSymmetricKey);
+    }
+
+    /**
+     * @dev Get metadata of a token
+     * @param tokenId token ID
+     * @return metadata of the token
+     */
+    function getMetadata(uint256 tokenId) public view returns (Metadata memory) {
+        return _metadata[tokenId];
+    }
 
     function _baseURI() internal pure override returns (string memory) {
         return "";
