@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SBT is ERC721, ERC721URIStorage, Ownable {
 
@@ -69,15 +69,15 @@ contract SBT is ERC721, ERC721URIStorage, Ownable {
         return super.supportsInterface(interfaceId);
     }
 
-    function transferFrom(address, address, uint256) public virtual override {
+    function transferFrom(address, address, uint256) public virtual override(ERC721, IERC721) {
         revert("Token transfer is not allowed");
     }
 
-    function safeTransferFrom(address, address, uint256) public virtual override {
+    function safeTransferFrom(address, address, uint256) public virtual override(ERC721, IERC721) {
         revert("Token transfer is not allowed");
     }
 
-    function safeTransferFrom(address, address, uint256, bytes memory) public virtual override {
+    function safeTransferFrom(address, address, uint256, bytes memory) public virtual override(ERC721, IERC721) {
         revert("Token transfer is not allowed");
     }
 
