@@ -9,7 +9,7 @@ contract SBT is ERC721, ERC721URIStorage, Ownable {
     constructor() ERC721("SBT", "SBT") {}
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://";
+        return "";
     }
 
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
