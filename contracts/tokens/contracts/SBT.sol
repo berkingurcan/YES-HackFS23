@@ -20,7 +20,7 @@ contract SBT is ERC721, ERC721URIStorage, Ownable {
     // Mapping from token ID to metadata
     mapping(uint256 => Metadata) private _metadata;
     
-    constructor() ERC721("SBT", "SBT") {}
+    constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) Ownable() {}
 
     /**
      * @dev Mint a new token
