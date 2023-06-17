@@ -9,6 +9,19 @@ import * as LitJsSdk from "@lit-protocol/lit-node-client";
 import { zeroETHaccessControlCondition } from "../utils/accessControls";
 import Lit from "../utils/lit";
 import { useContractWrite } from "wagmi";
+import GateToken from "../../contracts/artifacts/contracts/GateToken.sol/GateToken.json";
+import GateFactory from "../../contracts/artifacts/contracts/GateFactory.sol/GateFactory.json";
+import SBT from "../../contracts/artifacts/contracts/SBT.sol/SBT.json";
+import SBTFactory from "../../contracts/artifacts/contracts/SBTFactory.sol/SBTFactory.json";
+
+const GateTokenAbi = GateToken.abi;
+const GateTokenAddress = GateToken.address;
+const GateFactoryAbi = GateFactory.abi;
+const GateFactoryAddress = GateFactory.address;
+const SBTAbi = SBT.abi;
+const SBTAddress = SBT.address;
+const SBTFactoryAbi = SBTFactory.abi;
+const SBTFactoryAddress = SBTFactory.address;
 
 function fileToBlob(file: File): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
@@ -44,29 +57,34 @@ async function deployGateToken() {
     address: GateFactoryAddress,
     functionName: "deployGate",
     args: [holderAddress, gateName, gateSymbol],
-  })
+  });
 
   write();
+  console.log("data: ", data);
 }
 
-async function issueSBT() {
+async function deploySBT() {
   const { data, isLoading, isSuccess, write } = useContractWrite({
     abi: SBTFactoryAbi,
     address: SBTFactoryAddress,
     functionName: "deploySBT",
     args: ["SBT", "SBT"],
-  })
+  });
 
   write();
+  console.log("data: ", data);
+}
 
-  const { data2, isLoading2, isSuccess2, write2 } = useContractWrite({
+async function mintSBT() {
+  const { data, isLoading, isSuccess, write } = useContractWrite({
     abi: SBTAbi,
     address: SBTAddress,
     functionName: "mint",
     args: [holderAddress, 0, cid, encryptedSymmetricKey],
-  })
+  });
 
-  write2();
+  write();
+  console.log("data: ", data);
 }
 
 const Issuer: NextPage = () => {
@@ -84,29 +102,29 @@ const Issuer: NextPage = () => {
 
       <div className={styles.container}>
         <div className={styles.card}>
-            <h2>Deploy Gate Token for Holder</h2>
-            <TextField
-              id="outlined-basic"
-              label="holder address"
-              variant="outlined"
-              onChange={(e) => setHolderAddress(e.target.value)}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Gate Name"
-              variant="outlined"
-              onChange={(e) => setGateName(e.target.value)}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Gate Symbol"
-              variant="outlined"
-              onChange={(e) => setGateSymbol(e.target.value)}
-            />
-            <br />
-            <br />
-            <Button variant="outlined">Deploy Gate Token</Button>
-          </div>
+          <h2>Deploy Gate Token for Holder</h2>
+          <TextField
+            id="outlined-basic"
+            label="holder address"
+            variant="outlined"
+            onChange={(e) => setHolderAddress(e.target.value)}
+          />
+          <TextField
+            id="outlined-basic"
+            label="Gate Name"
+            variant="outlined"
+            onChange={(e) => setGateName(e.target.value)}
+          />
+          <TextField
+            id="outlined-basic"
+            label="Gate Symbol"
+            variant="outlined"
+            onChange={(e) => setGateSymbol(e.target.value)}
+          />
+          <br />
+          <br />
+          <Button variant="outlined">Deploy Gate Token</Button>
+        </div>
         <div className={styles.card}>
           <input type="file" id="file" />
           <label htmlFor="file"> Choose a file</label>
@@ -122,7 +140,6 @@ const Issuer: NextPage = () => {
           <br />
           <br />
         </div>
-       
       </div>
     </main>
   );
