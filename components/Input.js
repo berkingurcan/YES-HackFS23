@@ -2,9 +2,6 @@ import { useAccount, useEnsAddress   } from 'wagmi'
 import { useState } from 'react'
 import { ethers } from 'ethers';
 
-
-
-
 export default function Input() {
   const { address, isConnecting, isDisconnected } = useAccount()
 
@@ -21,9 +18,11 @@ async function handleMintNft(){
         // Go and mint the nft 
         console.log("Mint")
     } 
-
+    else{
+      console.log("Give me a valid address!")
+    }
    
-   
+   console.log(ensAddress)
 }
 
 function isValidAddress(address) {
@@ -32,7 +31,7 @@ function isValidAddress(address) {
       console.log("Valid address");
       return true;
     } catch (error) {
-        console.log(error)
+        console.log("Invalid address")
       return false;
     }
   }
