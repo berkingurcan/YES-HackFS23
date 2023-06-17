@@ -15,13 +15,13 @@ import SBT from "../../contracts/artifacts/contracts/SBT.sol/SBT.json";
 import SBTFactory from "../../contracts/artifacts/contracts/SBTFactory.sol/SBTFactory.json";
 
 const GateTokenAbi = GateToken.abi;
-const GateTokenAddress = GateToken.address;
+let GateTokenAddress;
 const GateFactoryAbi = GateFactory.abi;
-const GateFactoryAddress = GateFactory.address;
+const GateFactoryAddress = "0x00d8b71ae03ca59911d455ef0cd27b216b4bcdcc";
 const SBTAbi = SBT.abi;
-const SBTAddress = SBT.address;
+let SBTAddress: any;
 const SBTFactoryAbi = SBTFactory.abi;
-const SBTFactoryAddress = SBTFactory.address;
+const SBTFactoryAddress = "0x72cb34bfc822904237184a6b71de32a990559425";
 
 function fileToBlob(file: File): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
