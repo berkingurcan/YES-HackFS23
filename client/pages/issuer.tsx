@@ -19,7 +19,6 @@ let GateTokenAddress;
 const GateFactoryAbi = GateFactory.abi;
 const GateFactoryAddress = "0x00d8b71ae03ca59911d455ef0cd27b216b4bcdcc";
 const SBTAbi = SBT.abi;
-let SBTAddress: any;
 const SBTFactoryAbi = SBTFactory.abi;
 const SBTFactoryAddress = "0x72cb34bfc822904237184a6b71de32a990559425";
 
@@ -51,41 +50,6 @@ async function uploadFile(file: any) {
   console.log("encryptedObject: ", encryptedObject);
 }
 
-async function deployGateToken() {
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    abi: GateFactoryAbi,
-    address: GateFactoryAddress,
-    functionName: "deployGate",
-    args: [holderAddress, gateName, gateSymbol],
-  });
-
-  write();
-  console.log("data: ", data);
-}
-
-async function deploySBT() {
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    abi: SBTFactoryAbi,
-    address: SBTFactoryAddress,
-    functionName: "deploySBT",
-    args: ["SBT", "SBT"],
-  });
-
-  write();
-  console.log("data: ", data);
-}
-
-async function mintSBT() {
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    abi: SBTAbi,
-    address: SBTAddress,
-    functionName: "mint",
-    args: [holderAddress, 0, cid, encryptedSymmetricKey],
-  });
-
-  write();
-  console.log("data: ", data);
-}
 
 const Issuer: NextPage = () => {
   const [holderAddress, setHolderAddress] = useState("");
@@ -93,7 +57,41 @@ const Issuer: NextPage = () => {
   const [gateSymbol, setGateSymbol] = useState("");
   const [cid, setCid] = useState("");
   const [encryptedSymmetricKey, setEncryptedSymmetricKey] = useState("");
-  const [SBTAddress, setSBTAddress] = useState("");
+  const [SBTAddress, setSBTAddress] = useState();
+  const [GateTokenAddress, setGateTokenAddress] = useState();
+
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    abi: GateFactoryAbi,
+    address: GateFactoryAddress,
+    functionName: "deployGate",
+    args: [holderAddress, gateName, gateSymbol],
+  });
+
+  const { data: dataSBT, write: writeSBT } = useContractWrite({
+    abi: SBTFactoryAbi,
+    address: SBTFactoryAddress,
+    functionName: "deploySBT",
+    args: ["SBT", "SBT"],
+  });
+
+  const { data: mintSBT, write: writeMintSBT } = useContractWrite({
+    abi: SBTAbi,
+    address: SBTAddress,
+    functionName: "mint",
+    args: [holderAddress, 0, cid, encryptedSymmetricKey],
+  });
+
+  async function deployGate() {
+    write();
+  }
+
+  async function deploySBT() {
+    writeSBT();
+  }
+
+  async function mint() {
+    writeMintSBT();
+  }
 
   return (
     <main className={styles.main}>
@@ -123,7 +121,7 @@ const Issuer: NextPage = () => {
           />
           <br />
           <br />
-          <Button variant="outlined">Deploy Gate Token</Button>
+          <Button variant="outlined" onClick={deployGate}>Deploy Gate Token</Button>
         </div>
         <div className={styles.card}>
           <input type="file" id="file" />
