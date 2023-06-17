@@ -6,11 +6,12 @@ import { useState } from "react";
 import Button from "../components/Button"
 import Input from '../components/Input';
 
+
 const inter = Inter({ subsets: ['latin'] })
 
 
 export default function Home() {
-
+  
   const [encryptfiles, setEncryptfiles] = useState(null);
   const [decryptfiles, setDecryptfiles] = useState(null);
 
@@ -42,6 +43,12 @@ export default function Home() {
     console.log("Encrypted file: ",decryptfiles); 
     await lit.decryptFile(decryptfiles,"df0cea1a20ddc5e6e4fc79759e8772caa52a9b2fd6e5ac5018917002b95b409fc16865b492e06c2e2be04438ddb06511eb3721776212e25b3923bc190f71f3086888e11bfc339f8f3ac12534e01192cf93e53bb7955424722df934877832e8a46b03cd7729897401bbf4c612ceaf08ad1cece8811548983368ef56da3d8fd674000000000000002033ed13eb438d0e798f44759c0f36c7f851b74645dc0029d753bc726e72bf15bba9f8345080ecb6312a571a7a83853d89"); 
 
+  }
+
+  async function handleSendNot(){
+    
+   
+    await pushNot()
   }
 
 

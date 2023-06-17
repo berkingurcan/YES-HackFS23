@@ -3,7 +3,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { WagmiConfig, createConfig, configureChains} from 'wagmi'
 import {
   filecoinCalibration,
-  goerli,
+  goerli,polygonMumbai
 } from "wagmi/chains";
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from 'wagmi/providers/public'
@@ -14,7 +14,7 @@ import {
 } from '@rainbow-me/rainbowkit';
  
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [goerli,filecoinCalibration],
+  [goerli,filecoinCalibration,polygonMumbai],
   [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_GOERLI_RPC_URL }),publicProvider()],
 )
 

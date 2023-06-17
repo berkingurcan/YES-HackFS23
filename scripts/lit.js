@@ -112,7 +112,7 @@ class Lit {
     const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(
       "this is a secret message bla bla bla"
     );
-    const encryptedSymmetricKey = await window.litNodeClient.saveEncryptionKey({
+    const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
       accessControlConditions,
       symmetricKey,
       authSig,
