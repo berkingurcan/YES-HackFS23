@@ -15,6 +15,7 @@ const SBTAbi = SBT.abi;
 const Decrypter: NextPage = () => {
 
     const [SBTAddress, setSBTAddress] = useState("");
+    const [fileAddress, setFileAddress] = useState("");
 
     async function getSBTMetadata(address: string) {
         const provider = new ethers.BrowserProvider(window.ethereum)
@@ -23,10 +24,18 @@ const Decrypter: NextPage = () => {
 
         console.log("Getting metadata for SBT");
         const SBTContract = new ethers.Contract(address, SBTAbi, signer);
-        const metadata = await SBTContract.getMetadata();
+        const metadata = await SBTContract.getMetadata(0);
 
-        console.log(metadata);
-        return metadata;
+        console.log(metadata[0]);
+        var objectParam = '[object Object]'; // Replace this with your desired value
+
+        // Convert the objectParam to a string and handle any special characters
+        var encodedParam = encodeURIComponent(objectParam);
+
+        const encryptedData = "https://" + metadata[0] + ".ipfs.w3s.link/" + `${encodedParam}`;
+        setFileAddress(encryptedData);
+        console.log(encryptedData)
+        return metadata[0];
     }
 
     return (
@@ -48,6 +57,8 @@ const Decrypter: NextPage = () => {
                     <div className={styles.card}>
                         <h2>Decrypt with from SBT</h2>
                         <TextField id="outlined-basic" label="SBT Address" variant="outlined" onChange = {(e) => setSBTAddress(e.target.value)} />
+                        <br />
+                        <br />
                         <Button variant="contained" onClick={() => getSBTMetadata(SBTAddress)}>Get Metadata</Button>
                     </div>
                 </div>
