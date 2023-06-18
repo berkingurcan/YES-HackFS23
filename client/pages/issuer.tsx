@@ -13,6 +13,9 @@ import GateToken from "../../contracts/artifacts/contracts/GateToken.sol/GateTok
 import GateFactory from "../../contracts/artifacts/contracts/GateFactory.sol/GateFactory.json";
 import SBT from "../../contracts/artifacts/contracts/SBT.sol/SBT.json";
 import SBTFactory from "../../contracts/artifacts/contracts/SBTFactory.sol/SBTFactory.json";
+import { ethers } from "ethers";
+
+
 
 const GateTokenAbi = GateToken.abi;
 let GateTokenAddress;
@@ -60,13 +63,6 @@ const Issuer: NextPage = () => {
   const [SBTAddress, setSBTAddress] = useState();
   const [GateTokenAddress, setGateTokenAddress] = useState();
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    abi: GateFactoryAbi,
-    address: GateFactoryAddress,
-    functionName: "deployGate",
-    args: [holderAddress, gateName, gateSymbol],
-  });
-
   const { data: dataSBT, write: writeSBT } = useContractWrite({
     abi: SBTFactoryAbi,
     address: SBTFactoryAddress,
@@ -81,8 +77,34 @@ const Issuer: NextPage = () => {
     args: [holderAddress, 0, cid, encryptedSymmetricKey],
   });
 
+  // create provider and signer
+  
+
+
   async function deployGate() {
-    write();
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    await provider.send("eth_accounts", []);
+    const signer = await provider.getSigner();
+    // create promise to deploy gate token with write function from useContractWrite hook and return data.address
+    const deployGateContract = new ethers.Contract(GateFactoryAddress, GateFactoryAbi, signer);
+    const deploymentTx = await deployGateContract.deployGate(holderAddress, gateName, gateSymbol);
+    const receipt = await deploymentTx.wait(); // wait for tx to be mined
+    console.log("DEPLOYNMENT TX", deploymentTx)
+
+    console.log("receipt: ", receipt);
+
+
+    let eventFilter = deployGateContract.filters.GateDeployed(holderAddress)
+    // create promise for eventFilter
+    let eventPromise = deployGateContract.queryFilter(eventFilter, receipt.blockNumber, receipt.blockNumber);
+    // wait for eventPromise to resolve
+    let eventResult = await eventPromise;
+    console.log("events", eventFilter)
+    console.log("eventResult: ", eventResult);
+
+    console.log("address ", eventResult[0].args[0]) // address of gate token );
+    console.log("address ", eventResult[0].args[1]) // address of gate token );
+    setGateTokenAddress(eventResult[0].args[1]);
   }
 
   async function deploySBT() {
@@ -122,6 +144,7 @@ const Issuer: NextPage = () => {
           <br />
           <br />
           <Button variant="outlined" onClick={deployGate}>Deploy Gate Token</Button>
+          <p>{GateTokenAddress}</p>
         </div>
         <div className={styles.card}>
           <input type="file" id="file" />
