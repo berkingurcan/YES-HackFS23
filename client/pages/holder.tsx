@@ -55,7 +55,7 @@ const Holder: NextPage = () => {
     const signer = await provider.getSigner();
 
     const GateToken = new ethers.Contract(gateAddress, GateTokenAbi, signer);
-    const burnTx = await GateToken.burn(to);
+    const burnTx = await GateToken.burnFromVerifier(to);
     const receipt = await burnTx.wait();
     console.log(receipt);
     console.log("Burned from: ", to );
