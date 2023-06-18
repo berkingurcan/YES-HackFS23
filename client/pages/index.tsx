@@ -33,6 +33,10 @@ const Home: NextPage = () => {
             <h2>Holder</h2>
             <p>Holder role</p>
           </a>
+          <a className={styles.card} href="/decrypter" rel="noopener noreferrer">
+            <h2>Decrypter</h2>
+            <p>Verifier Role</p>
+          </a>
         </div>
       </main>
 

@@ -125,7 +125,6 @@ const Issuer: NextPage = () => {
     console.log("SBT ADDRESS: ", SBTAddress);
   }
 
-
   async function issue() {
     await deployGate();
     await uploadFile(File);
