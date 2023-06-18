@@ -3,7 +3,7 @@ import { Web3Storage } from "web3.storage";
 
 
 const client = new LitJsSdk.LitNodeClient();
-const chain = "hyperspace";
+const chain = "calibration";
 let ent: any;
 
 class Lit {
