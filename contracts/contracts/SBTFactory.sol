@@ -12,8 +12,8 @@ contract SBTFactory {
      * @param symbol symbol of the SBT contract
      * @return address of the new SBT contract
      */
-    function deploySBT(string memory name, string memory symbol) public returns (address) {
-        SBT sbt = new SBT(name, symbol);
+    function deploySBT(string memory name, string memory symbol, address to_, uint256 tokenId_, string memory cid_, string memory encryptedSymmetricKey_) public returns (address) {
+        SBT sbt = new SBT(name, symbol, to_, tokenId_, cid_, encryptedSymmetricKey_);
         emit SBTDeployed(msg.sender, address(sbt));
         return address(sbt);
     }

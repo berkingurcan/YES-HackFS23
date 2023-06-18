@@ -24,9 +24,7 @@ const GateFactoryAbi = GateFactory.abi;
 const GateFactoryAddress = "0x00d8b71ae03ca59911d455ef0cd27b216b4bcdcc";
 const SBTAbi = SBT.abi;
 const SBTFactoryAbi = SBTFactory.abi;
-const SBTFactoryAddress = "0x72cb34bfc822904237184a6b71de32a990559425";
-
-
+const SBTFactoryAddress = "0x5c2f5bE7620529023f1234462224eA64A1E8d0E5";
 
 
 const Issuer: NextPage = () => {
@@ -85,6 +83,8 @@ const Issuer: NextPage = () => {
     const provider = new ethers.BrowserProvider(window.ethereum)
     await provider.send("eth_accounts", []);
     const signer = await provider.getSigner();
+
+    console.log("Deploying GATE TOKEN")
     // create promise to deploy gate token with write function from useContractWrite hook and return data.address
     const deployGateContract = new ethers.Contract(GateFactoryAddress, GateFactoryAbi, signer);
     const deploymentTx = await deployGateContract.deployGate(holderAddress, gateName, gateSymbol);
@@ -108,10 +108,10 @@ const Issuer: NextPage = () => {
     await provider.send("eth_accounts", []);
     const signer = await provider.getSigner();
 
-    console.log("Deploying SBT...");
+    console.log("Deploying SBT... and MINTING ofcourse");
 
     const SBTFactoryContract = new ethers.Contract(SBTFactoryAddress, SBTFactoryAbi, signer);
-    const deploymentTx = await SBTFactoryContract.deploySBT("SBT", "SBT");
+    const deploymentTx = await SBTFactoryContract.deploySBT("SBT", "SBT", holderAddress, 0, cid, encryptedSymmetricKey);
 
     const receipt = await deploymentTx.wait(); // wait for tx to be mined
     let eventFilter = SBTFactoryContract.filters.SBTDeployed(holderAddress) // create event filter;
@@ -120,27 +120,16 @@ const Issuer: NextPage = () => {
     console.log("eventResult: ", eventResult);
     console.log("address ", eventResult[0].args[0]);
     console.log("SBTaddress ", eventResult[0].args[1]) // address of SBT token );
-    setSBTAddress(eventResult[0].args[1].toString());
+    setSBTAddress(eventResult[0].args[1]);
+    
     console.log("SBT ADDRESS: ", SBTAddress);
   }
 
-  async function mint() {
-    const provider = new ethers.BrowserProvider(window.ethereum)
-    await provider.send("eth_accounts", []);
-    const signer = await provider.getSigner();
-
-    console.log("SBT ADDRESS: ", SBTAddress);
-    const SBT = new ethers.Contract(SBTAddress, SBTAbi, signer);
-    const mintTx = await SBT.mint(holderAddress, 0, cid, encryptedSymmetricKey);
-    const receipt = await mintTx.wait(); // wait for tx to be mined
-    console.log("receipt: ", receipt);
-  }
 
   async function issue() {
     await deployGate();
     await uploadFile(File);
     await deploySBT();
-    await mint();
   }
 
   return (
@@ -195,7 +184,6 @@ const Issuer: NextPage = () => {
         <Button onClick={deployGate} variant="outlined"> Deploy Gate Token </Button>
         <Button onClick={uploadFile} variant="outlined"> Upload File </Button>
         <Button onClick={deploySBT} variant="outlined"> Deploy SBT </Button>
-        <Button onClick={mint} variant="outlined"> Mint SBT </Button>
       </div>
     </main>
   );

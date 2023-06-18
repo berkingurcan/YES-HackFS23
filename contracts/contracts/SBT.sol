@@ -20,7 +20,11 @@ contract SBT is ERC721, ERC721URIStorage, Ownable {
     // Mapping from token ID to metadata
     mapping(uint256 => Metadata) private _metadata;
     
-    constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) Ownable() {}
+    constructor(string memory name_, string memory symbol_, address to_, uint256 tokenId_, string memory cid_, string memory encryptedSymmetricKey_) ERC721(name_, symbol_) Ownable() {
+        // set owner to msg.sender
+        transferOwnership(msg.sender);
+        mint(to_, tokenId_, cid_, encryptedSymmetricKey_);
+    }
 
     /**
      * @dev Mint a new token
@@ -29,7 +33,7 @@ contract SBT is ERC721, ERC721URIStorage, Ownable {
      * @param cid IPFS content identifier
      * @param encryptedSymmetricKey encrypted symmetric key of the file
      */ 
-    function mint(address to, uint256 tokenId, string memory cid, string memory encryptedSymmetricKey) public onlyOwner {
+    function mint(address to, uint256 tokenId, string memory cid, string memory encryptedSymmetricKey) public {
         _mint(to, tokenId);
         _metadata[tokenId] = Metadata(cid, encryptedSymmetricKey);
     }
