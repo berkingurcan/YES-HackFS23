@@ -36,7 +36,7 @@ const Issuer: NextPage = () => {
   const [cid, setCid] = useState("");
   const [encryptedSymmetricKey, setEncryptedSymmetricKey] = useState("");
   const [GateTokenAddress, setGateTokenAddress] = useState();
-  const [SBTAddress, setSBTAddress] = useState("");
+  const [SBTAddress, setSBTAddress] = useState();
 
 
   const accessControlGateTokenConditions = [{
@@ -77,6 +77,8 @@ const Issuer: NextPage = () => {
     const encryptedObject = await Lit.encryptFile(blobFile, accessControlGateTokenConditions);
   
     console.log("encryptedObject: ", encryptedObject);
+    setCid(encryptedObject.cid);
+    setEncryptedSymmetricKey(encryptedObject.encryptedSymmetricKey);
   }
 
   async function deployGate() {
@@ -97,7 +99,7 @@ const Issuer: NextPage = () => {
     console.log("eventResult: ", eventResult);
 
     console.log("address ", eventResult[0].args[0]);
-    console.log("address ", eventResult[0].args[1]) // address of gate token );
+    console.log("Gate address ", eventResult[0].args[1]) // address of gate token );
     setGateTokenAddress(eventResult[0].args[1]);
   }
 
@@ -106,17 +108,19 @@ const Issuer: NextPage = () => {
     await provider.send("eth_accounts", []);
     const signer = await provider.getSigner();
 
-    const deploySBTContract = new ethers.Contract(SBTFactoryAddress, SBTFactoryAbi, signer);
-    const deploymentTx = await deploySBTContract.deploySBT("SBT", "SBT");
+    console.log("Deploying SBT...");
+
+    const SBTFactoryContract = new ethers.Contract(SBTFactoryAddress, SBTFactoryAbi, signer);
+    const deploymentTx = await SBTFactoryContract.deploySBT("SBT", "SBT");
 
     const receipt = await deploymentTx.wait(); // wait for tx to be mined
-    let eventFilter = deploySBTContract.filters.SBTDeployed(holderAddress) // create event filter;
-    let eventPromise = deploySBTContract.queryFilter(eventFilter, receipt.blockNumber, receipt.blockNumber); // create promise for eventFilter
+    let eventFilter = SBTFactoryContract.filters.SBTDeployed(holderAddress) // create event filter;
+    let eventPromise = SBTFactoryContract.queryFilter(eventFilter, receipt.blockNumber, receipt.blockNumber); // create promise for eventFilter
     let eventResult = await eventPromise; // wait for eventPromise to resolve
     console.log("eventResult: ", eventResult);
     console.log("address ", eventResult[0].args[0]);
-    console.log("address ", eventResult[0].args[1]) // address of SBT token );
-    setSBTAddress(eventResult[0].args[1]);
+    console.log("SBTaddress ", eventResult[0].args[1]) // address of SBT token );
+    setSBTAddress(eventResult[0].args[1].toString());
     console.log("SBT ADDRESS: ", SBTAddress);
   }
 
@@ -187,6 +191,11 @@ const Issuer: NextPage = () => {
           <p>cid: {cid}</p>
           <p>encryptedSymmetricKey: {encryptedSymmetricKey}</p>
         </div>
+
+        <Button onClick={deployGate} variant="outlined"> Deploy Gate Token </Button>
+        <Button onClick={uploadFile} variant="outlined"> Upload File </Button>
+        <Button onClick={deploySBT} variant="outlined"> Deploy SBT </Button>
+        <Button onClick={mint} variant="outlined"> Mint SBT </Button>
       </div>
     </main>
   );
