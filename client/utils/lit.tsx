@@ -3,7 +3,7 @@ import { Web3Storage } from "web3.storage";
 
 
 const client = new LitJsSdk.LitNodeClient();
-const chain = "calibration";
+const chain = "hyperspace";
 let ent: any;
 
 class Lit {
@@ -16,6 +16,22 @@ class Lit {
 
   makeStorageClient() {
     return new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE });
+  }
+
+  async decryptFromIPFS(ipfsCid: any) {
+    if (!this.litNodeClient) {
+      await this.connect();
+    }
+
+    const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
+
+    const decryptedString = await LitJsSdk.decryptFromIpfs({
+      authSig,
+      ipfsCid, // This is returned from the above encryption
+      litNodeClient: this.litNodeClient,
+    });
+
+    return decryptedString;
   }
 
   async encryptFile(file: any, accessControlCondition: any) {

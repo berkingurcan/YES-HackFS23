@@ -16,6 +16,7 @@ const Decrypter: NextPage = () => {
 
     const [SBTAddress, setSBTAddress] = useState("");
     const [fileAddress, setFileAddress] = useState("");
+    const [fileUrl, setFileUrl] = useState<string | null>(null);
 
     async function getSBTMetadata(address: string) {
         const provider = new ethers.BrowserProvider(window.ethereum)
@@ -36,6 +37,17 @@ const Decrypter: NextPage = () => {
         setFileAddress(encryptedData);
         console.log(encryptedData)
         return metadata[0];
+    }
+
+    async function decryptFile() {
+        const metadata = await getSBTMetadata(SBTAddress);
+        const decryptedString = await Lit.decryptFromIPFS(metadata);
+
+        const blob = new Blob([decryptedString], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        setFileUrl(url);
+        console.log(decryptedString);
+        return decryptedString;
     }
 
     return (
@@ -60,8 +72,16 @@ const Decrypter: NextPage = () => {
                         <br />
                         <br />
                         <Button variant="contained" onClick={() => getSBTMetadata(SBTAddress)}>Get Metadata</Button>
+                        <Button variant="contained" onClick={() => decryptFile()}>Decrypt</Button>
                     </div>
+
                 </div>
+                {fileUrl && (
+                    <div>
+                    <p>Decrypted File:</p>
+                    <iframe src={fileUrl} width="100%" height="500px" />
+                    </div>
+                )}
             </main>
             
         </div>
