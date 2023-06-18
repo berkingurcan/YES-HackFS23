@@ -14,44 +14,19 @@ import GateFactory from "../../contracts/artifacts/contracts/GateFactory.sol/Gat
 import SBT from "../../contracts/artifacts/contracts/SBT.sol/SBT.json";
 import SBTFactory from "../../contracts/artifacts/contracts/SBTFactory.sol/SBTFactory.json";
 import { ethers } from "ethers";
-
+import { access } from "fs";
 
 
 const GateTokenAbi = GateToken.abi;
 let GateTokenAddress;
+let SBTAddress;
 const GateFactoryAbi = GateFactory.abi;
 const GateFactoryAddress = "0x00d8b71ae03ca59911d455ef0cd27b216b4bcdcc";
 const SBTAbi = SBT.abi;
 const SBTFactoryAbi = SBTFactory.abi;
 const SBTFactoryAddress = "0x72cb34bfc822904237184a6b71de32a990559425";
 
-function fileToBlob(file: File): Promise<Blob> {
-  return new Promise<Blob>((resolve, reject) => {
-    const reader = new FileReader();
 
-    reader.onloadend = () => {
-      const blob = new Blob([reader.result as ArrayBuffer], {
-        type: file.type,
-      });
-      resolve(blob);
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Error reading file"));
-    };
-
-    reader.readAsArrayBuffer(new Blob([file]));
-  });
-}
-
-// create function which encrypts pdf file and uploads to hyperspace via web3.storage
-async function uploadFile(file: any) {
-  let blobFile = await fileToBlob(file);
-  await Lit.connect();
-  const encryptedObject = await Lit.encryptFile(blobFile);
-
-  console.log("encryptedObject: ", encryptedObject);
-}
 
 
 const Issuer: NextPage = () => {
@@ -60,26 +35,49 @@ const Issuer: NextPage = () => {
   const [gateSymbol, setGateSymbol] = useState("");
   const [cid, setCid] = useState("");
   const [encryptedSymmetricKey, setEncryptedSymmetricKey] = useState("");
-  const [SBTAddress, setSBTAddress] = useState();
   const [GateTokenAddress, setGateTokenAddress] = useState();
+  const [SBTAddress, setSBTAddress] = useState("");
 
-  const { data: dataSBT, write: writeSBT } = useContractWrite({
-    abi: SBTFactoryAbi,
-    address: SBTFactoryAddress,
-    functionName: "deploySBT",
-    args: ["SBT", "SBT"],
-  });
 
-  const { data: mintSBT, write: writeMintSBT } = useContractWrite({
-    abi: SBTAbi,
-    address: SBTAddress,
-    functionName: "mint",
-    args: [holderAddress, 0, cid, encryptedSymmetricKey],
-  });
+  const accessControlGateTokenConditions = [{
+    contractAddress: GateTokenAddress,
+    standardContractType: "ERC20",
+    'chain': 'calibration',
+    method: "balanceOf",
+    parameters: [":userAddress"],
+    returnValueTest: {
+      comparator: ">",
+      value: "0",
+    }
+  }]
 
-  // create provider and signer
+  function fileToBlob(file: File): Promise<Blob> {
+    return new Promise<Blob>((resolve, reject) => {
+      const reader = new FileReader();
   
-
+      reader.onloadend = () => {
+        const blob = new Blob([reader.result as ArrayBuffer], {
+          type: file.type,
+        });
+        resolve(blob);
+      };
+  
+      reader.onerror = () => {
+        reject(new Error("Error reading file"));
+      };
+  
+      reader.readAsArrayBuffer(new Blob([file]));
+    });
+  }
+  
+  // create function which encrypts pdf file and uploads to hyperspace via web3.storage
+  async function uploadFile(file: any) {
+    let blobFile = await fileToBlob(file);
+    await Lit.connect();
+    const encryptedObject = await Lit.encryptFile(blobFile, accessControlGateTokenConditions);
+  
+    console.log("encryptedObject: ", encryptedObject);
+  }
 
   async function deployGate() {
     const provider = new ethers.BrowserProvider(window.ethereum)
@@ -89,10 +87,6 @@ const Issuer: NextPage = () => {
     const deployGateContract = new ethers.Contract(GateFactoryAddress, GateFactoryAbi, signer);
     const deploymentTx = await deployGateContract.deployGate(holderAddress, gateName, gateSymbol);
     const receipt = await deploymentTx.wait(); // wait for tx to be mined
-    console.log("DEPLOYNMENT TX", deploymentTx)
-
-    console.log("receipt: ", receipt);
-
 
     let eventFilter = deployGateContract.filters.GateDeployed(holderAddress)
     // create promise for eventFilter
@@ -102,17 +96,47 @@ const Issuer: NextPage = () => {
     console.log("events", eventFilter)
     console.log("eventResult: ", eventResult);
 
-    console.log("address ", eventResult[0].args[0]) // address of gate token );
+    console.log("address ", eventResult[0].args[0]);
     console.log("address ", eventResult[0].args[1]) // address of gate token );
     setGateTokenAddress(eventResult[0].args[1]);
   }
 
   async function deploySBT() {
-    writeSBT();
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    await provider.send("eth_accounts", []);
+    const signer = await provider.getSigner();
+
+    const deploySBTContract = new ethers.Contract(SBTFactoryAddress, SBTFactoryAbi, signer);
+    const deploymentTx = await deploySBTContract.deploySBT("SBT", "SBT");
+
+    const receipt = await deploymentTx.wait(); // wait for tx to be mined
+    let eventFilter = deploySBTContract.filters.SBTDeployed(holderAddress) // create event filter;
+    let eventPromise = deploySBTContract.queryFilter(eventFilter, receipt.blockNumber, receipt.blockNumber); // create promise for eventFilter
+    let eventResult = await eventPromise; // wait for eventPromise to resolve
+    console.log("eventResult: ", eventResult);
+    console.log("address ", eventResult[0].args[0]);
+    console.log("address ", eventResult[0].args[1]) // address of SBT token );
+    setSBTAddress(eventResult[0].args[1]);
+    console.log("SBT ADDRESS: ", SBTAddress);
   }
 
   async function mint() {
-    writeMintSBT();
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    await provider.send("eth_accounts", []);
+    const signer = await provider.getSigner();
+
+    console.log("SBT ADDRESS: ", SBTAddress);
+    const SBT = new ethers.Contract(SBTAddress, SBTAbi, signer);
+    const mintTx = await SBT.mint(holderAddress, 0, cid, encryptedSymmetricKey);
+    const receipt = await mintTx.wait(); // wait for tx to be mined
+    console.log("receipt: ", receipt);
+  }
+
+  async function issue() {
+    await deployGate();
+    await uploadFile(File);
+    await deploySBT();
+    await mint();
   }
 
   return (
@@ -143,8 +167,6 @@ const Issuer: NextPage = () => {
           />
           <br />
           <br />
-          <Button variant="outlined" onClick={deployGate}>Deploy Gate Token</Button>
-          <p>{GateTokenAddress}</p>
         </div>
         <div className={styles.card}>
           <input type="file" id="file" />
@@ -155,11 +177,15 @@ const Issuer: NextPage = () => {
           <p>Drag your file here or click in this area.</p>
         </div>
         <div className={styles.card}>
-          <Button onClick={uploadFile} variant="outlined">
+          <Button onClick={issue} variant="outlined">
             ISSUE SBT TO THE HOLDER
           </Button>
           <br />
           <br />
+          <p>Gate token address: {GateTokenAddress}</p>
+          <p>SBT address: {SBTAddress}</p>
+          <p>cid: {cid}</p>
+          <p>encryptedSymmetricKey: {encryptedSymmetricKey}</p>
         </div>
       </div>
     </main>

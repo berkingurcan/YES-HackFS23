@@ -1,9 +1,6 @@
 import * as LitJsSdk from "@lit-protocol/lit-node-client";
 import { Web3Storage } from "web3.storage";
-import {
-  zeroETHaccessControlCondition,
-  tenthETHaccessControlCondition,
-} from "./accessControls";
+
 
 const client = new LitJsSdk.LitNodeClient();
 const chain = "hyperspace";
@@ -21,7 +18,7 @@ class Lit {
     return new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE });
   }
 
-  async encryptFile(file: any) {
+  async encryptFile(file: any, accessControlCondition: any) {
     if (!this.litNodeClient) {
       await this.connect();
     }
@@ -31,7 +28,7 @@ class Lit {
     });
 
     const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
-      accessControlConditions: zeroETHaccessControlCondition,
+      accessControlConditions: accessControlCondition,
       symmetricKey,
       authSig,
       chain,

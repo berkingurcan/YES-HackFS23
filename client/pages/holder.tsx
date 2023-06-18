@@ -6,6 +6,9 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import * as React from "react";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { useState } from "react";
+import GateToken from "../../contracts/artifacts/contracts/GateToken.sol/GateToken.json";
+import { ethers } from "ethers";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 60 },
@@ -26,7 +29,38 @@ const rows = [
   },
 ];
 
+const GateTokenAbi = GateToken.abi;
+
 const Holder: NextPage = () => {
+  const[gateAddress, setGateAddress] = useState("");
+  const[to, setTo] = useState("");
+
+  async function mint() {
+    console.log("minting");
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    await provider.send("eth_accounts", []);
+    const signer = await provider.getSigner();
+
+    const GateToken = new ethers.Contract(gateAddress, GateTokenAbi, signer);
+    const mintTx = await GateToken.mint(to); 
+    const receipt = await mintTx.wait();
+    console.log(receipt);
+    console.log("Minted to: ", to );
+  }
+  
+  async function burn() {
+    console.log("burning");
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    await provider.send("eth_accounts", []);
+    const signer = await provider.getSigner();
+
+    const GateToken = new ethers.Contract(gateAddress, GateTokenAbi, signer);
+    const burnTx = await GateToken.burn(to);
+    const receipt = await burnTx.wait();
+    console.log(receipt);
+    console.log("Burned from: ", to );
+  }
+
   return (
     <main className={styles.main}>
       <h1>Holder Page</h1>
@@ -53,16 +87,17 @@ const Holder: NextPage = () => {
           <div className={styles.card}>
             <TextField
               id="outlined-basic"
-              label="SBT Address"
+              label="Gate Address"
               variant="outlined"
+              onChange={(e) => setGateAddress(e.target.value)}
             />
-            <TextField id="outlined-basic" label="To" variant="outlined" />
+            <TextField id="outlined-basic" label="To" variant="outlined" onChange={(e) => setTo(e.target.value)} />
             <br />
             <br />
-            <Button variant="outlined">Mint Gate Token</Button>
+            <Button variant="outlined" onClick={mint}>SHOW YOUR DOCUMENT TO VERIFIER </Button>
             <br />
             <br />
-            <Button variant="outlined">Burn Gate Token</Button>
+            <Button variant="outlined" onClick={burn}>END UP ACCESS OF YOUR DOCUMENT</Button>
           </div>
         </div>
       </div>
